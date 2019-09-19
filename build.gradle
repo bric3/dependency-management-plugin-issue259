@@ -1,0 +1,140 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.1.8.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+}
+
+repositories {
+    maven {
+        url "${rootProject.rootDir}/repository"
+    }
+    jcenter()
+}
+
+ext {
+    // versions
+    commonJavaVersion = '4.+'
+    springBootVersion = '2.1.8.RELEASE'
+}
+
+
+// Needed to properly import common-java artifacts
+dependencyManagement {
+    imports {
+        mavenBom("com.company.service.common:common-java:$commonJavaVersion")
+        // properties available here https://github.com/spring-projects/spring-boot/blob/2.1.x/spring-boot-project/spring-boot-dependencies/pom.xml
+        mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion") {
+            bomProperties([
+                'lombok.version' : '1.18.2',
+                'jackson.version' : '2.9.9',
+
+                // test
+                'junit-jupiter.version' : '5.5.2',
+                'undertow.version' : '2.0.20.Final',
+                'mockito.version' : '3.0.0',
+                'assertj.version' : '3.13.2',
+                'rest-assured.version' : '4.0.0',
+
+                // doc
+                'spring-restdocs.version' : '2.0.3.RELEASE'
+            ])
+        }
+    }
+    dependencies {
+        // main
+        dependency("net.logstash.logback:logstash-logback-encoder:6.1")
+        dependency("com.github.akarnokd:rxjava2-jdk8-interop:0.3.5")
+        dependencySet(group:'com.squareup.retrofit2', version: '2.5.0') {
+            entry('retrofit')
+            entry('converter-jackson')
+            entry('converter-scalars')
+            entry('adapter-rxjava2')
+        }
+        dependencySet(group:'com.squareup.okhttp3', version: '3.14.1') {
+            entry('okhttp')
+            entry('logging-interceptor')
+            entry('mockwebserver')
+        }
+        dependencySet(group:'org.apache.curator', version: '4.2.0') {
+            entry('curator-framework')
+            entry('curator-x-async')
+            entry('curator-test') // test
+        }
+
+        // test
+        dependency("org.awaitility:awaitility:3.1.6")
+        dependency("com.github.stefanbirkner:system-rules:1.19.0")
+        dependency("org.mock-server:mockserver-netty:5.5.4")
+        dependency("net.javacrumbs.json-unit:json-unit:2.6.1")
+        dependency("com.sun.xml.bind:jaxb-osgi:2.3.1") // fixes error when building pom model
+    }
+}
+
+dependencies {
+    implementation "org.hibernate.validator:hibernate-validator"
+
+    implementation "net.logstash.logback:logstash-logback-encoder"
+    implementation "org.springframework:spring-webmvc"
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+
+    implementation "com.squareup.retrofit2:retrofit"
+    implementation "com.squareup.retrofit2:converter-jackson"
+    implementation "com.squareup.retrofit2:converter-scalars"
+    implementation "com.squareup.retrofit2:adapter-rxjava2"
+    implementation "com.squareup.okhttp3:okhttp"
+    implementation "com.squareup.okhttp3:logging-interceptor"
+
+    implementation "com.fasterxml.jackson.core:jackson-core"
+    implementation "com.fasterxml.jackson.core:jackson-annotations"
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
+    implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
+
+    implementation "org.apache.curator:curator-x-async"
+
+    implementation "io.reactivex.rxjava2:rxjava"
+    implementation "com.github.akarnokd:rxjava2-jdk8-interop"
+
+    compileOnly "org.projectlombok:lombok"
+    compileOnly "org.springframework.boot:spring-boot-configuration-processor"
+    annotationProcessor "org.projectlombok:lombok"
+
+    testImplementation('org.junit.jupiter:junit-jupiter-api')
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine')
+    testCompileOnly('junit:junit') {
+        because("Because we want to migrate to JUnit 5 progressively")
+    }
+    testRuntimeOnly('org.junit.vintage:junit-vintage-engine') {
+        because("Because we want to migrate to JUnit 5 progressively")
+    }
+    testImplementation "org.mock-server:mockserver-netty"
+    testImplementation "org.assertj:assertj-core"
+    testImplementation "org.mockito:mockito-core"
+    testImplementation "com.squareup.okhttp3:mockwebserver"
+    testImplementation "org.apache.curator:curator-test"
+    testImplementation "org.apache.curator:curator-framework"
+
+    testImplementation "io.undertow:undertow-core"
+    testImplementation "io.undertow:undertow-servlet"
+
+    testImplementation "org.awaitility:awaitility"
+    testImplementation "com.github.stefanbirkner:system-rules"
+
+
+    testImplementation "net.javacrumbs.json-unit:json-unit"
+    testImplementation "com.squareup.okhttp3:mockwebserver"
+    testImplementation "io.rest-assured:rest-assured"
+    testImplementation "com.sun.xml.bind:jaxb-osgi"
+
+    testCompileOnly "org.projectlombok:lombok"
+    testAnnotationProcessor "org.projectlombok:lombok"
+}
+
+
+
+//println dependencyManagement.managedVersions
